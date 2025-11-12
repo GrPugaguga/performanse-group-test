@@ -1,6 +1,5 @@
 import * as bcrypt from 'bcrypt';
 import { UserRole } from '../value-objects/UserRole';
-import de from 'zod/v4/locales/de.js';
 
 export class User {
     id: number;
@@ -42,7 +41,7 @@ export class User {
     }
 
     public promoteToAdmin(): void {
-        this.role = UserRole.createAdmin();
+        this.role = UserRole.createAdmin();  
     }
   
     public getData(): Omit<User, 'password'> {
