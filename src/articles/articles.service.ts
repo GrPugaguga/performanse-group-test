@@ -12,7 +12,7 @@ export class ArticlesService {
     const { tags: tagNames, ...articleData } = createArticleDto;
 
     const articleEntity = Article.create({
-      authorId: currentUser.id,
+      author_id: currentUser.id,
       ...articleData,
     });
 
@@ -20,10 +20,10 @@ export class ArticlesService {
       const [articleId] = await trx('articles').insert({
         title: articleEntity.title,
         content: articleEntity.content,
-        authorId: articleEntity.authorId,
+        author_id: articleEntity.author_id,
         isPublic: articleEntity.isPublic,
-        createdAt: articleEntity.createdAt,
-        updatedAt: articleEntity.updatedAt,
+        created_at: articleEntity.created_at,
+        updated_at: articleEntity.updated_at,
       });
       articleEntity.id = articleId;
 
@@ -54,7 +54,7 @@ export class ArticlesService {
           .join('tags', 'article_tags.tag_id', 'tags.id')
           .whereIn('tags.name', normalizedTags)
           .groupBy('articles.id')
-          .having(knex.raw('COUNT(DISTINCT "tags"."id")'), '=', normalizedTags.length);
+          .having(knex.raw('COUNT(DISTINCT `tags`.`id`)'), '=', normalizedTags.length);
       }
     }
 
@@ -106,7 +106,7 @@ export class ArticlesService {
   async update(id: number, updateArticleDto: UpdateArticleDto, currentUser: User): Promise<Article> {
     const article = await this.findOne(id, currentUser);
 
-    if (!currentUser.canModifyArticle(article.authorId)) {
+    if (!currentUser.canModifyArticle(article.author_id)) {
       throw new ForbiddenException('You do not have permission to modify this article');
     }
 
@@ -116,7 +116,7 @@ export class ArticlesService {
       if (Object.keys(articleUpdateData).length > 0) {
         await trx('articles').where({ id }).update({
           ...articleUpdateData,
-          updatedAt: new Date(),
+          updated_at: new Date(),
         });
       }
 
@@ -131,7 +131,7 @@ export class ArticlesService {
   async remove(id: number, currentUser: User): Promise<void> {
     const article = await this.findOne(id, currentUser);
 
-    if (!currentUser.canModifyArticle(article.authorId)) {
+    if (!currentUser.canModifyArticle(article.author_id)) {
       throw new ForbiddenException('You do not have permission to delete this article');
     }
 

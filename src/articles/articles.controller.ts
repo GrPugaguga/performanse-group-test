@@ -8,15 +8,15 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { User } from '../users/entities/User';
 import { Public } from '../auth/decorators/public/public.decorator';
 import { Article } from './entities/Article';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags,ApiBearerAuth, ApiQuery } from '@nestjs/swagger'; // Import ApiQuery
 
 @ApiTags('Articles') 
 @Controller('articles')
+@ApiBearerAuth('JWT-auth') 
 export class ArticlesController {
   constructor(private readonly articlesService: ArticlesService) {}
 
   @Post()
-  @ApiBearerAuth('JWT-auth') 
   @UseGuards(JwtAuthGuard)
   async create(
     @Body() createArticleDto: CreateArticleDto,
@@ -28,6 +28,13 @@ export class ArticlesController {
   @Get()
   @Public()
   @UseGuards(OptionalJwtAuthGuard)
+  @ApiQuery({
+    name: 'tags',
+    required: false,
+    type: String,
+    description: 'Filter articles by tags',
+    example: 'nestjs,typescript',
+  })
   async findAll(
     @Query() query: { tags?: string | string[] },
     @CurrentUser() currentUser?: User,
@@ -46,7 +53,6 @@ export class ArticlesController {
   }
 
   @Patch(':id')
-  @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtAuthGuard)
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -58,7 +64,6 @@ export class ArticlesController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiBearerAuth('JWT-auth') 
   @UseGuards(JwtAuthGuard)
   async remove(
     @Param('id', ParseIntPipe) id: number,

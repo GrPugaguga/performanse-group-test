@@ -6,9 +6,9 @@ export class Article {
     title: string;
     content: string;
     isPublic: boolean; 
-    authorId: number;
-    createdAt: Date;
-    updatedAt: Date;
+    author_id: number;
+    created_at: Date;
+    updated_at: Date;
     tags?: Tag[];
 
     constructor(articleData: Partial<Article>) {
@@ -18,43 +18,43 @@ export class Article {
     public static create(data: {
         title: string;
         content: string;
-        authorId: number;
+        author_id: number;
         isPublic: boolean; 
     }): Article {
         return new Article({ 
             ...data, 
-            createdAt: new Date(), 
-            updatedAt: new Date() 
+            created_at: new Date(), 
+            updated_at: new Date() 
         });
     }
 
     public isOwnedBy(userId: number): boolean {
-        return this.authorId === userId;
+        return this.author_id === userId;
     }
 
     public updateContent(newContent: string): void {
         this.content = newContent;
-        this.updatedAt = new Date();
+        this.updated_at = new Date();
     }
 
     public updateTitle(newTitle: string): void {
         this.title = newTitle;
-        this.updatedAt = new Date();
+        this.updated_at = new Date();
     }
 
     public publish(): void {
         this.isPublic = true; 
-        this.updatedAt = new Date();
+        this.updated_at = new Date();
     }
 
     public unpublish(): void {
         this.isPublic = false; 
-        this.updatedAt = new Date();
+        this.updated_at = new Date();
     }
 
     public setTags(tags: Tag[]): void {
         this.tags = tags;
-        this.updatedAt = new Date();
+        this.updated_at = new Date();
     }
 
     public getTags(): Tag[] | undefined {
