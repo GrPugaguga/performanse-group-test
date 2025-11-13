@@ -45,12 +45,12 @@ export class UsersService {
 
   async promoteToAdmin(targetUserId: number, currentUser: User): Promise<User> {
     if (!currentUser.isAdmin()) {
-      throw new ForbiddenException('Только администраторы могут повышать роли пользователей.');
+      throw new ForbiddenException('Only administrators can promote users to admin.');
     }
 
     const userToUpdate = await this.findOne(targetUserId);
     if (!userToUpdate) {
-      throw new NotFoundException(`Пользователь с ID ${targetUserId} не найден.`);
+      throw new NotFoundException(`User with ID ${targetUserId} not found.`);
     }
 
     userToUpdate.promoteToAdmin(); 
@@ -63,17 +63,17 @@ export class UsersService {
   async remove(targetUserId: number, currentUser: User): Promise<void> {
     const userToDelete = await this.findOne(targetUserId);
     if (!userToDelete) {
-      throw new NotFoundException(`Пользователь с ID ${targetUserId} не найден.`);
+      throw new NotFoundException(`User with ID ${targetUserId} not found.`);
     }
 
     if (!currentUser.canDelete(userToDelete)) {
-      throw new ForbiddenException('У вас нет прав для удаления этого пользователя.');
+      throw new ForbiddenException('You do not have permission to delete this user.');
     }
 
     if (userToDelete.isAdmin()) {
       const adminCount = await knex('users').where({ role: UserRole.createAdmin().toString() }).count('id as count');
       if (parseInt(adminCount[0].count.toString()) === 1) {
-        throw new ForbiddenException('Невозможно удалить последнего администратора.');
+        throw new ForbiddenException('Cannot delete the last administrator.');
       }
     }
 

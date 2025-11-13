@@ -20,7 +20,7 @@ export class UsersController {
     const targetUserId = parseInt(id, 10);
     const user = await this.usersService.findOne(targetUserId);
     if (!user) {
-      throw new NotFoundException(`Пользователь с ID ${id} не найден.`);
+      throw new NotFoundException(`User with ID ${targetUserId} not found.`);
     }
     return user.getData();
   }

@@ -1,11 +1,15 @@
+import { Tag } from "./Tag";
+
+
 export class Article {
     id: number;
     title: string;
     content: string;
-    isPublic: boolean; // <-- Исправлена опечатка
+    isPublic: boolean; 
     authorId: number;
     createdAt: Date;
     updatedAt: Date;
+    tags?: Tag[];
 
     constructor(articleData: Partial<Article>) {
         Object.assign(this, articleData);
@@ -46,6 +50,19 @@ export class Article {
     public unpublish(): void {
         this.isPublic = false; 
         this.updatedAt = new Date();
+    }
+
+    public setTags(tags: Tag[]): void {
+        this.tags = tags;
+        this.updatedAt = new Date();
+    }
+
+    public getTags(): Tag[] | undefined {
+        return this.tags;
+    }
+
+    public getTagNames(): string[] | undefined {
+        return this.tags?.map(tag => tag.name);
     }
 
     public isPubliс(): boolean { 
