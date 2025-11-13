@@ -2,12 +2,15 @@ import { Controller, Get, Post, Delete, Param, UseGuards, Request, NotFoundExcep
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { User } from './entities/User';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger'; 
 
+
+@ApiTags('Users')
 @Controller('users')
 @UseGuards(JwtAuthGuard) 
+@ApiBearerAuth('JWT-auth')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-
 
   @Get()
   async findAll() {
@@ -31,7 +34,6 @@ export class UsersController {
     const updatedUser = await this.usersService.promoteToAdmin(parseInt(id, 10), req.user);
     return updatedUser.getData();
   }
-
 
   @Delete(':id')
   @HttpCode(204)

@@ -1,4 +1,4 @@
-import {Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards, ParseIntPipe, HttpCode, HttpStatus} from '@nestjs/common';
+import { Controller,Get, Post, Patch, Delete, Body, Param, Query, UseGuards, ParseIntPipe, HttpCode, HttpStatus} from '@nestjs/common';
 import { ArticlesService } from './articles.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
@@ -8,41 +8,62 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { User } from '../users/entities/User';
 import { Public } from '../auth/decorators/public/public.decorator';
 import { Article } from './entities/Article';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiTags('Articles') 
 @Controller('articles')
 export class ArticlesController {
   constructor(private readonly articlesService: ArticlesService) {}
 
   @Post()
+  @ApiBearerAuth('JWT-auth') 
   @UseGuards(JwtAuthGuard)
-  async create(@Body() createArticleDto: CreateArticleDto, @CurrentUser() currentUser: User): Promise<Article> {
+  async create(
+    @Body() createArticleDto: CreateArticleDto,
+    @CurrentUser() currentUser: User,
+  ): Promise<Article> {
     return this.articlesService.create(createArticleDto, currentUser);
   }
 
   @Get()
   @Public()
   @UseGuards(OptionalJwtAuthGuard)
-  async findAll(@Query() query: { tags?: string | string[] },@CurrentUser() currentUser?: User): Promise<Article[]> {
+  async findAll(
+    @Query() query: { tags?: string | string[] },
+    @CurrentUser() currentUser?: User,
+  ): Promise<Article[]> {
     return this.articlesService.findAll(query, currentUser);
   }
 
   @Get(':id')
   @Public()
   @UseGuards(OptionalJwtAuthGuard)
-  async findOne(@Param('id', ParseIntPipe) id: number, @CurrentUser() currentUser?: User): Promise<Article> {
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() currentUser?: User,
+  ): Promise<Article> {
     return this.articlesService.findOne(id, currentUser);
   }
 
   @Patch(':id')
+  @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtAuthGuard)
-  async update(@Param('id', ParseIntPipe) id: number, @Body() updateArticleDto: UpdateArticleDto, @CurrentUser() currentUser: User): Promise<Article> {
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateArticleDto: UpdateArticleDto,
+    @CurrentUser() currentUser: User,
+  ): Promise<Article> {
     return this.articlesService.update(id, updateArticleDto, currentUser);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiBearerAuth('JWT-auth') 
   @UseGuards(JwtAuthGuard)
-  async remove(@Param('id', ParseIntPipe) id: number, @CurrentUser() currentUser: User): Promise<void> {
+  async remove(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() currentUser: User,
+  ): Promise<void> {
     await this.articlesService.remove(id, currentUser);
   }
 }
