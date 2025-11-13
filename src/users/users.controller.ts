@@ -1,13 +1,22 @@
-import { Controller, Get, Post, Delete, Param, UseGuards, Request, NotFoundException, HttpCode } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Param,
+  UseGuards,
+  Request,
+  NotFoundException,
+  HttpCode,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { User } from './entities/User';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger'; 
-
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiTags('Users')
 @Controller('users')
-@UseGuards(JwtAuthGuard) 
+@UseGuards(JwtAuthGuard)
 @ApiBearerAuth('JWT-auth')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -15,7 +24,7 @@ export class UsersController {
   @Get()
   async findAll() {
     const users = await this.usersService.findAll();
-    return users.map(user => user.getData());
+    return users.map((user) => user.getData());
   }
 
   @Get(':id')
@@ -30,8 +39,14 @@ export class UsersController {
 
   @Post(':id/promote')
   @HttpCode(200)
-  async promoteToAdmin(@Param('id') id: string, @Request() req: { user: User }) {
-    const updatedUser = await this.usersService.promoteToAdmin(parseInt(id, 10), req.user);
+  async promoteToAdmin(
+    @Param('id') id: string,
+    @Request() req: { user: User },
+  ) {
+    const updatedUser = await this.usersService.promoteToAdmin(
+      parseInt(id, 10),
+      req.user,
+    );
     return updatedUser.getData();
   }
 

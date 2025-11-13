@@ -1,5 +1,5 @@
-import _knex from "knex";
-import knexConfig from "../config/knex/knexfile";
+import _knex from 'knex';
+import knexConfig from '../config/knex/knexfile';
 
 const knex = _knex(knexConfig);
 

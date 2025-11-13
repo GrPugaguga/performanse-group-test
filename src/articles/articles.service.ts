@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import knex from '../database/knex';
 import { Article } from './entities/Article';
 import { Tag } from './entities/Tag';
@@ -8,7 +12,10 @@ import { UpdateArticleDto } from './dto/update-article.dto';
 
 @Injectable()
 export class ArticlesService {
-  async create(createArticleDto: CreateArticleDto, currentUser: User): Promise<Article> {
+  async create(
+    createArticleDto: CreateArticleDto,
+    currentUser: User,
+  ): Promise<Article> {
     const { tags: tagNames, ...articleData } = createArticleDto;
 
     const articleEntity = Article.create({
@@ -35,7 +42,10 @@ export class ArticlesService {
     return this.findOne(articleEntity.id, currentUser);
   }
 
-  async findAll(query: { tags?: string | string[] }, currentUser?: User): Promise<Article[]> {
+  async findAll(
+    query: { tags?: string | string[] },
+    currentUser?: User,
+  ): Promise<Article[]> {
     const qb = knex('articles').select('articles.*');
 
     if (!currentUser) {
@@ -45,8 +55,8 @@ export class ArticlesService {
     if (query.tags) {
       const tagsArray = Array.isArray(query.tags)
         ? query.tags
-        : query.tags.split(',').map(tag => tag.trim());
-        
+        : query.tags.split(',').map((tag) => tag.trim());
+
       const normalizedTags = tagsArray.map(Tag.normalize).filter(Boolean);
 
       if (normalizedTags.length > 0) {
@@ -54,7 +64,11 @@ export class ArticlesService {
           .join('tags', 'article_tags.tag_id', 'tags.id')
           .whereIn('tags.name', normalizedTags)
           .groupBy('articles.id')
-          .having(knex.raw('COUNT(DISTINCT `tags`.`id`)'), '=', normalizedTags.length);
+          .having(
+            knex.raw('COUNT(DISTINCT `tags`.`id`)'),
+            '=',
+            normalizedTags.length,
+          );
       }
     }
 
@@ -103,21 +117,29 @@ export class ArticlesService {
     return article;
   }
 
-  async update(id: number, updateArticleDto: UpdateArticleDto, currentUser: User): Promise<Article> {
+  async update(
+    id: number,
+    updateArticleDto: UpdateArticleDto,
+    currentUser: User,
+  ): Promise<Article> {
     const article = await this.findOne(id, currentUser);
 
     if (!currentUser.canModifyArticle(article.author_id)) {
-      throw new ForbiddenException('You do not have permission to modify this article');
+      throw new ForbiddenException(
+        'You do not have permission to modify this article',
+      );
     }
 
     const { tags: tagNames, ...articleUpdateData } = updateArticleDto;
 
     await knex.transaction(async (trx) => {
       if (Object.keys(articleUpdateData).length > 0) {
-        await trx('articles').where({ id }).update({
-          ...articleUpdateData,
-          updated_at: new Date(),
-        });
+        await trx('articles')
+          .where({ id })
+          .update({
+            ...articleUpdateData,
+            updated_at: new Date(),
+          });
       }
 
       if (tagNames) {
@@ -132,13 +154,19 @@ export class ArticlesService {
     const article = await this.findOne(id, currentUser);
 
     if (!currentUser.canModifyArticle(article.author_id)) {
-      throw new ForbiddenException('You do not have permission to delete this article');
+      throw new ForbiddenException(
+        'You do not have permission to delete this article',
+      );
     }
 
     await knex('articles').where({ id }).del();
   }
 
-  private async synchronizeTags(articleId: number, tagNames: string[], trx: any) {
+  private async synchronizeTags(
+    articleId: number,
+    tagNames: string[],
+    trx: any,
+  ) {
     const normalizedTagNames = tagNames.map(Tag.normalize).filter(Boolean);
 
     const existingTags = await trx('tags').whereIn('name', normalizedTagNames);
@@ -150,7 +178,9 @@ export class ArticlesService {
 
     let newTagIds: number[] = [];
     if (newTagNames.length > 0) {
-      const result = await trx('tags').insert(newTagNames.map((name) => ({ name })));
+      const result = await trx('tags').insert(
+        newTagNames.map((name) => ({ name })),
+      );
       newTagIds = result;
     }
 

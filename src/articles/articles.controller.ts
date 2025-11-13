@@ -1,4 +1,17 @@
-import { Controller,Get, Post, Patch, Delete, Body, Param, Query, UseGuards, ParseIntPipe, HttpCode, HttpStatus} from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  ParseIntPipe,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { ArticlesService } from './articles.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
@@ -8,11 +21,11 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { User } from '../users/entities/User';
 import { Public } from '../auth/decorators/public/public.decorator';
 import { Article } from './entities/Article';
-import { ApiTags,ApiBearerAuth, ApiQuery } from '@nestjs/swagger'; // Import ApiQuery
+import { ApiTags, ApiBearerAuth, ApiQuery } from '@nestjs/swagger'; // Import ApiQuery
 
-@ApiTags('Articles') 
+@ApiTags('Articles')
 @Controller('articles')
-@ApiBearerAuth('JWT-auth') 
+@ApiBearerAuth('JWT-auth')
 export class ArticlesController {
   constructor(private readonly articlesService: ArticlesService) {}
 

@@ -12,7 +12,6 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-
   async register(registerDto: RegisterDto): Promise<{ access_token: string }> {
     const existingUser = await this.usersService.findByEmail(registerDto.email);
     if (existingUser) {
@@ -24,8 +23,10 @@ export class AuthService {
     return this.login(user);
   }
 
- 
-  async validateUser(email: string, pass: string): Promise<Omit<User, 'password'> | null> {
+  async validateUser(
+    email: string,
+    pass: string,
+  ): Promise<Omit<User, 'password'> | null> {
     const user = await this.usersService.findByEmail(email);
     if (user && (await user.comparePassword(pass))) {
       return user.getData();
@@ -38,8 +39,8 @@ export class AuthService {
     if (!user) {
       throw new ConflictException('Invalid email or password.');
     }
-    const payload = { 
-      sub: user.id, 
+    const payload = {
+      sub: user.id,
       email: user.email,
       role: user.role.toString(),
     };
