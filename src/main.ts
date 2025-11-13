@@ -8,7 +8,6 @@ async function bootstrap() {
   
   app.useGlobalPipes(new ValidationPipe());
 
-  // Swagger setup
   const config = new DocumentBuilder()
     .setTitle('Another Knowledge Base API')
     .setDescription('The API documentation for the Another Knowledge Base service.')
