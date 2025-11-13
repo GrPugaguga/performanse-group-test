@@ -59,4 +59,5 @@ API endpoints
 
 npx knex migrate:latest
 
-npx knex seed:run - создает первого пользователя админа в базе данных с данными  email: 'admin@example.com', password: 'password'
+npx knex seed:run - создает первого пользователя админа в базе данных с данными 
+email: 'admin@example.com', password: 'password'
